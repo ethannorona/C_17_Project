@@ -2,6 +2,8 @@ var PLAY = 1
 var END = 0
 var gameState = 1;
 
+var swordSound, gameOverSound;
+
 var treasureCollection = 0;
 
 var path,boy,cash,diamonds,jwellery,sword;
@@ -17,6 +19,9 @@ function preload(){
   jwelleryImg = loadImage("jwell.png");
   swordImg = loadImage("sword.png");
   endImg =loadAnimation("gameOver.png");
+
+  swordSound = loadSound("knifeSwoosh.mp3");
+  gameOverSound = loadSound("gameover.mp3");
 }
 
 function setup(){
@@ -73,6 +78,7 @@ function draw() {
     }else{
       if(swordGroup.isTouching(boy)) {
         swordGroup.destroyEach();
+        swordSound.play();
         gameState = 0;
     }
   }
@@ -97,6 +103,7 @@ function draw() {
        swordGroup.destroyEach();
        swordGroup.setVelocityYEach(0);
        
+       gameOverSound.play();
      }
   }
 

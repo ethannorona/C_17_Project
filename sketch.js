@@ -6,6 +6,8 @@ var swordSound, gameOverSound;
 
 var treasureCollection = 0;
 
+var resetText, resetTextImg;
+ 
 var path,boy,cash,diamonds,jwellery,sword;
 var pathImg,boyImg,cashImg,diamondsImg,jwelleryImg,swordImg;
 var treasureCollection = 0;
@@ -19,9 +21,10 @@ function preload(){
   jwelleryImg = loadImage("jwell.png");
   swordImg = loadImage("sword.png");
   endImg =loadAnimation("gameOver.png");
+  resetTextImg = loadImage("c_17.png");
 
-  swordSound = loadSound("knifeSwoosh.mp3");
-  gameOverSound = loadSound("gameover.mp3");
+  swordSound = loadSound('knifeSwoosh.mp3');
+  gameOverSound = loadSound('gameover.mp3');
 }
 
 function setup(){
@@ -37,7 +40,13 @@ boy = createSprite(70,530,20,20);
 boy.addAnimation("SahilRunning",boyImg);
 boy.scale=0.08;
   
-  
+
+resetText = createSprite(200, 350);
+resetText.addImage("restart", resetTextImg);
+resetText.depth = path.depth + 1;
+resetText.scale = 0.5;
+
+
 cashG=new Group();
 diamondsG=new Group();
 jwelleryG=new Group();
@@ -52,12 +61,14 @@ function draw() {
   edges= createEdgeSprites();
   
   if(gameState === PLAY){
-    path.velocityY = 4;
+    path.velocityY = (4 + 2 * treasureCollection/150);
     
     boy.x = World.mouseX;
   
     boy.collide(edges);
     
+    resetText.visible = false;
+
     createCash();
     createDiamonds();
     createJwellery();
@@ -79,17 +90,25 @@ function draw() {
       if(swordGroup.isTouching(boy)) {
         swordGroup.destroyEach();
         swordSound.play();
+        gameOverSound.play();
         gameState = 0;
     }
   }
+}
+  
     
      if(gameState === END){
-       path.velocityY = 0;
-       
+      textSize(20);
+      text("Press Space to Restart", 200, 350)
+      
+      path.velocityY = 0;
+      
        boy.addAnimation("SahilRunning", endImg);
        boy.scale = 0.8;
        boy.x = 200;
        boy.y = 300;
+
+       resetText.visible = true;
        
        cashG.destroyEach();
        cashG.setVelocityYEach(0);
@@ -102,10 +121,11 @@ function draw() {
        
        swordGroup.destroyEach();
        swordGroup.setVelocityYEach(0);
-       
-       gameOverSound.play();
      }
-  }
+
+     if(keyDown("space") && gameState === END){ 
+      reset();
+    }
 
   
   //code to reset the background
@@ -125,7 +145,7 @@ function createCash() {
   var cash = createSprite(Math.round(random(50, 350),40, 10, 10));
   cash.addImage(cashImg);
   cash.scale=0.12;
-  cash.velocityY = 3;
+  cash.velocityY = (3 + 2 * treasureCollection/150);
   cash.lifetime = 150;
   cashG.add(cash);
   }
@@ -136,7 +156,7 @@ function createDiamonds() {
   var diamonds = createSprite(Math.round(random(50, 350),40, 10, 10));
   diamonds.addImage(diamondsImg);
   diamonds.scale=0.03;
-  diamonds.velocityY = 3;
+  diamonds.velocityY = (3 + 2 * treasureCollection/150);
   diamonds.lifetime = 150;
   diamondsG.add(diamonds);
 }
@@ -147,7 +167,7 @@ function createJwellery() {
   var jwellery = createSprite(Math.round(random(50, 350),40, 10, 10));
   jwellery.addImage(jwelleryImg);
   jwellery.scale=0.13;
-  jwellery.velocityY = 3;
+  jwellery.velocityY = (3 + 2 * treasureCollection/150);
   jwellery.lifetime = 150;
   jwelleryG.add(jwellery);
   }
@@ -158,8 +178,17 @@ function createSword(){
   var sword = createSprite(Math.round(random(50, 350),40, 10, 10));
   sword.addImage(swordImg);
   sword.scale=0.1;
-  sword.velocityY = 3;
+  sword.velocityY = (3 + 2 * treasureCollection/150);
   sword.lifetime = 150;
   swordGroup.add(sword);
   }
+}
+
+function reset(){
+  treasureCollection = 0
+  gameState = PLAY;
+  boy.addAnimation("SahilRunning",boyImg);
+  boy.x = 70;
+  boy.y = 530;
+  boy.scale=0.08;
 }
